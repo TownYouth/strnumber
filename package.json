@@ -1,0 +1,45 @@
+{
+  "name": "strnumber",
+  "version": "1.0.4",
+  "description": "这是一个数字计算类，用于解决js浮点数运算精度丢失和大数运算的问题，封装了常用的加减乘除计算方法，还包括toFixed方法，实例支持链式调用计算方法，计算方法也可以在静态方法中调用。",
+  "main": "dist/strnumber.umd.js",
+  "module": "dist/strnumber.mjs",
+  "typings": "dist/strnumber.d.ts",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/TownYouth/strnumber#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TownYouth/strnumber.git"
+  },
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "pushnpm": "npm publish --registry https://registry.npmjs.org",
+    "lint": "eslint . --ext .vue,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "keywords": [
+    "js",
+    "number"
+  ],
+  "author": "townyouth",
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.8.0",
+    "prettier": "^3.4.0",
+    "typescript": "5.1.6",
+    "vite": "^4.4.2",
+    "vite-plugin-dts": "^3.3.1",
+    "vue": "^3.5.13",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "@vue/tsconfig": "^0.5.1",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.4.0",
+    "eslint-plugin-vue": "^9.23.0"
+  }
+}
