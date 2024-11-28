@@ -18,6 +18,8 @@ class NestingNode {
 export function parseNesting(str: string) {
   str.replace(/\s/g, '')
   if (typeof str !== 'string') throw new Error('参数类型错误')
+
+  str = str.replace(/\s/g, '')
   if (!validateNestingStr(str)) throw new Error('参数格式错误')
 
   const rootNode = new NestingNode(null)
