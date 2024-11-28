@@ -53,6 +53,8 @@ export function parseNesting(str: string) {
 function validateNestingStr(str: string) {
   if (/[^.+\-*/0-9e()]+/.test(str)) return false // 只允许出现 数字、运算符、小数点、括号
   if (/\d\(|\)\d/.test(str)) return false // 不能出现数字和括号相邻
+  if (/[+\-*/](?=[+\-*/])/.test(str)) return false // 不能出现运算符号相邻
+  if (/(?<=\()[+\-*/]|[+\-*/](?=\))/.test(str)) return false // 不能出现 +)或(+
   if (str.includes('e') && !/(?<=\d)e(?=[+-]\d+)/g.test(str)) return false // 验证科学计数法格式
   return true
 }

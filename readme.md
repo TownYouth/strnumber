@@ -13,9 +13,9 @@ $ npm install strnumber
 ## Example
 
 ```typescript
-import StrNumber from 'strnumber'
+import { StrNumber, strNumber } from 'strnumber' // strNumber 为不用 new 调用的 StrNumber
 
-const a = new StrNumber(1)
+const a = new StrNumber(1) // 或 strNumber(1)
 
 // 支持实例的链式调用，支持多种参数类型
 const b = a.add(1, '1e+17').times(new StrNumber(2)) // 结果为：new StrNumber('200000000000000004')

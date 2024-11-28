@@ -1,6 +1,6 @@
 {
   "name": "strnumber",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "这是一个数字计算类，用于解决js浮点数运算精度丢失和大数运算的问题，封装了常用的加减乘除计算方法，还包括toFixed方法，实例支持链式调用计算方法，计算方法也可以在静态方法中调用。",
   "main": "dist/strnumber.umd.js",
   "module": "dist/strnumber.mjs",
