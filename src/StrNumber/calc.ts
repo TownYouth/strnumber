@@ -291,7 +291,7 @@ export const into = cacheResult(function (a: StrNumberType, b: StrNumberType): S
   let res = ''
   let parent = aList.shift() as string
   let jie = 0
-  while (jie < MAX_FLOAD_LENGTH + 1 && checkNumber(parent) !== '0') {
+  while (jie < MAX_FLOAD_LENGTH + 1 && parent !== '0') {
     if (aIsLessThanB(b, parent)) {
       let shang = 0
       while (!aIsMoreThanB(times(b, shang), parent)) {
@@ -376,6 +376,8 @@ export const toFixed = cacheResult(function (value: StrNumberType, digits: numbe
 export const _isInfinite = function (
   value: StrNumberType
 ): value is typeof NEGATIVE_INFINITY | typeof POSITIVE_INFINITY {
+  value === Number.POSITIVE_INFINITY && (value = POSITIVE_INFINITY)
+  value === Number.NEGATIVE_INFINITY && (value = NEGATIVE_INFINITY)
   return [POSITIVE_INFINITY, NEGATIVE_INFINITY].includes(value as StrNumberFlag)
 }
 
@@ -393,7 +395,7 @@ export const _isFinite = function (value: StrNumberType): value is string {
  * 判断数值是否是NaN
  */
 export const _isNaN = function (value: StrNumberType): value is typeof _NaN {
-  return _NaN === value
+  return Object.is(_NaN, value)
 }
 
 /**
@@ -404,10 +406,6 @@ export const formatNumber = cacheResult(function (value: StrNumberType): StrNumb
   if (Object.prototype.toString.call(value) === '[object StrNumber]') {
     return (<any>value).value
   }
-
-  if (_isInfinite(value)) return value
-
-  if (_isNaN(value)) return _NaN
 
   if (typeof value === 'number') {
     if (Number.isNaN(value)) return _NaN
@@ -421,6 +419,10 @@ export const formatNumber = cacheResult(function (value: StrNumberType): StrNumb
 
     value = String(value)
   }
+
+  if (_isInfinite(value)) return value
+
+  if (_isNaN(value)) return _NaN
 
   const _val = NumberRegex.exec(value as string)
   if (!_val) return typeof _NaN

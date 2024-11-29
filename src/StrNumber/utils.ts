@@ -51,7 +51,15 @@ export const cacheResult: CacheResultInterface = function <P extends Array<unkno
       cacheResult.lastStamp = Date.now()
     }
 
-    const key = args.join('_')
+    const key = args
+      .map((item) => {
+        // 处理正负0
+        if (item === 0) {
+          return Number.POSITIVE_INFINITY / item === Number.POSITIVE_INFINITY ? '0' : '-0'
+        }
+        return item
+      })
+      .join('_')
     if (!cache[key]) {
       cache[key] = callback.apply(this, args)
     }
@@ -62,4 +70,4 @@ cacheResult.pool = new Map()
 cacheResult.expirationDate = 60 * 1000
 cacheResult.lastStamp = 0
 // @ts-ignore
-window.cacheResult = cacheResult
+globalThis.cacheResult = cacheResult
