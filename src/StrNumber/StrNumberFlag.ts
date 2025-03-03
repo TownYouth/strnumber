@@ -16,7 +16,7 @@ class StrNumberFlag {
   }
 
   public toString() {
-    return this.value.description
+    return this.value.description as string
   }
 }
 

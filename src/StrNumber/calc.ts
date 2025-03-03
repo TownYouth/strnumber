@@ -1,6 +1,6 @@
 import { onCalc, onPrioritizeRequirements, parseNesting } from './parseFormulas'
 import StrNumberFlag from './StrNumberFlag'
-import { sliceListPadStart, slicingNumber, cacheResult } from './utils'
+import { sliceListPadStart, slicingNumber } from './utils'
 
 /**
  * 数字验证正则
@@ -21,7 +21,7 @@ export const _NaN = new StrNumberFlag('NaN')
 /**
  * 计算两数之和
  */
-export const add = cacheResult(function (a: StrNumberType, b: StrNumberType): StrNumberValue {
+export const add = function (a: StrNumberType, b: StrNumberType): StrNumberValue {
   const SLICE_LENGTH = 15 // 计算数字切割长度
   const RADIX = Number(scientificNotation2Number('1', SLICE_LENGTH))
 
@@ -85,12 +85,12 @@ export const add = cacheResult(function (a: StrNumberType, b: StrNumberType): St
   const res = scientificNotation2Number(resArr.join(''), e * -1)
 
   return checkNumber(res)
-})
+}
 
 /**
  * 计算两数之差
  */
-export const minus = cacheResult(function (a: StrNumberType, b: StrNumberType): StrNumberValue {
+export const minus = function (a: StrNumberType, b: StrNumberType): StrNumberValue {
   const SLICE_LENGTH = 15 // 计算数字切割长度
   const RADIX = Number(scientificNotation2Number('1', SLICE_LENGTH))
 
@@ -129,6 +129,7 @@ export const minus = cacheResult(function (a: StrNumberType, b: StrNumberType): 
   if (isLessThan0A) {
     return ('-' + (add(abs(a), b) as string)) // 断言这一步不会出现无穷
       .replace(/^--/, '')
+      .replace(/^-0$/, '0')
   }
   if (isLessThan0B) {
     return add(a, abs(b))
@@ -168,12 +169,12 @@ export const minus = cacheResult(function (a: StrNumberType, b: StrNumberType): 
 
   const res = scientificNotation2Number(resArr.join(''), e * -1)
   return checkNumber(res)
-})
+}
 
 /**
  * 计算两数之积
  */
-export const times = cacheResult(function (a: StrNumberType, b: StrNumberType): StrNumberValue {
+export const times = function (a: StrNumberType, b: StrNumberType): StrNumberValue {
   const SLICE_LENGTH = 7 // 计算数字切割长度
 
   // 参数归一化
@@ -231,12 +232,12 @@ export const times = cacheResult(function (a: StrNumberType, b: StrNumberType): 
   }
 
   return checkNumber(flag + scientificNotation2Number(res, (eA + eB) * -1))
-})
+}
 
 /**
  * 计算两数之商
  */
-export const into = cacheResult(function (a: StrNumberType, b: StrNumberType): StrNumberValue {
+export const into = function (a: StrNumberType, b: StrNumberType): StrNumberValue {
   const MAX_FLOAD_LENGTH = 100 // 商的最大小数位数
 
   // 参数归一化
@@ -291,17 +292,16 @@ export const into = cacheResult(function (a: StrNumberType, b: StrNumberType): S
   let res = ''
   let parent = aList.shift() as string
   let jie = 0
-  while (jie < MAX_FLOAD_LENGTH + 1 && parent !== '0') {
-    if (aIsLessThanB(b, parent)) {
+  while (aList.length || (jie < MAX_FLOAD_LENGTH + 1 && checkNumber(parent) !== '0')) {
+    if (aIsLessThanB(parent, b)) {
+      res += '0'
+    } else {
       let shang = 0
-      while (!aIsMoreThanB(times(b, shang), parent)) {
+      while (!aIsLessThanB(parent, times(b, shang + 1))) {
         shang++
       }
-      shang--
       res += String(shang)
       parent = minus(parent, times(b, shang)) as string
-    } else {
-      res += '0'
     }
     if (aList.length) {
       parent += aList.shift()
@@ -320,13 +320,13 @@ export const into = cacheResult(function (a: StrNumberType, b: StrNumberType): S
   }
 
   return res
-})
+}
 
-export const calc = cacheResult(function (str: string) {
+export const calc = function (str: string) {
   const nestingNode = parseNesting(str)
   const calcStructure = onPrioritizeRequirements(nestingNode)
   return onCalc(calcStructure, calcMethodMap)
-})
+}
 
 const calcMethodMap = {
   '+': add,
@@ -338,7 +338,7 @@ const calcMethodMap = {
 /**
  * 指定小数位数，超出四舍五入，不足补0
  */
-export const toFixed = cacheResult(function (value: StrNumberType, digits: number): string {
+export const toFixed = function (value: StrNumberType, digits: number): string {
   if (digits < 0) throw new Error('digits must be greater than or equal to 0')
   value = formatNumber(value)
 
@@ -368,7 +368,7 @@ export const toFixed = cacheResult(function (value: StrNumberType, digits: numbe
   const [resInt, resFloat = ''] = fixedRes.split('.')
   fixedRes = resInt + '.' + resFloat.padEnd(digits + 1, '0').slice(0, digits)
   return flag + fixedRes.replace(/\.$/, '')
-})
+}
 
 /**
  * 判断数值是否是无限的
@@ -402,7 +402,7 @@ export const _isNaN = function (value: StrNumberType): value is typeof _NaN {
  * 数字字符串格式化
  * 用于外传参数归一化
  */
-export const formatNumber = cacheResult(function (value: StrNumberType): StrNumberValue {
+export const formatNumber = function (value: StrNumberType): StrNumberValue {
   if (Object.prototype.toString.call(value) === '[object StrNumber]') {
     return (<any>value).value
   }
@@ -420,6 +420,10 @@ export const formatNumber = cacheResult(function (value: StrNumberType): StrNumb
     value = String(value)
   }
 
+  if (typeof value === 'string') {
+    value = value.replace(/^0+(?=\d)/, '')
+  }
+
   if (_isInfinite(value)) return value
 
   if (_isNaN(value)) return _NaN
@@ -432,22 +436,22 @@ export const formatNumber = cacheResult(function (value: StrNumberType): StrNumb
 
   value = scientificNotation2Number(value, e)
   return value
-})
+}
 
 /**
  * 数字字符串格式化
  * 用于内部数字合规化
  */
-export const checkNumber = cacheResult(function (value: StrNumberValue): StrNumberValue {
+export const checkNumber = function (value: StrNumberValue): StrNumberValue {
   if (_isNaN(value)) return value
   if (_isInfinite(value)) return value
   return value.replace(/((^0+(?!(\.|$)))|(\.0+$)|((?<=\.[1-9]+)0+$))/g, '')
-})
+}
 
 /**
  * 将科学计数法还原为数字
  */
-const scientificNotation2Number = cacheResult(function (value: string, e: number): string {
+const scientificNotation2Number = function (value: string, e: number): string {
   if (e === 0) return value
 
   let [int, float = ''] = value.split('.')
@@ -463,27 +467,27 @@ const scientificNotation2Number = cacheResult(function (value: string, e: number
   let _val = int + float
   _val = _val.replace(/^0(?!\.)/, '').replace(/\.$/, '')
   return checkNumber(_val) as string
-})
+}
 
-const abs = cacheResult(function (value: StrNumberValue): StrNumberValue {
+const abs = function (value: StrNumberValue): StrNumberValue {
   if (value instanceof StrNumberFlag) return value
   return value.replace(/^-|\+/, '')
-})
+}
 
 /**
  * 判断是否为负数
  */
-const isNegativeNumber = cacheResult(function (value: StrNumberValue) {
+const isNegativeNumber = function (value: StrNumberValue) {
   if (value === NEGATIVE_INFINITY) return true
   if (value === POSITIVE_INFINITY) return false
 
   return /^-/.test(value as string)
-})
+}
 
 /**
  * 判断A是否小于B
  */
-export const aIsLessThanB = cacheResult(function (a: StrNumberType, b: StrNumberType): boolean {
+export const aIsLessThanB = function (a: StrNumberType, b: StrNumberType): boolean {
   a = formatNumber(a)
   b = formatNumber(b)
 
@@ -536,12 +540,12 @@ export const aIsLessThanB = cacheResult(function (a: StrNumberType, b: StrNumber
     }
   }
   return false
-})
+}
 
 /**
  * 判断A是否等于B
  */
-export const aIsEqualToB = cacheResult(function (a: StrNumberType, b: StrNumberType) {
+export const aIsEqualToB = function (a: StrNumberType, b: StrNumberType) {
   a = formatNumber(a)
   b = formatNumber(b)
 
@@ -554,11 +558,53 @@ export const aIsEqualToB = cacheResult(function (a: StrNumberType, b: StrNumberT
   typeof b === 'string' && (b = b.replace(/^-0$/, '0'))
 
   return checkNumber(a) === checkNumber(b)
-})
+}
 
 /**
  * 判断A是否大于B
  */
-export const aIsMoreThanB = cacheResult(function (a: StrNumberType, b: StrNumberType) {
+export const aIsMoreThanB = function (a: StrNumberType, b: StrNumberType) {
   return !aIsEqualToB(a, b) && !aIsLessThanB(a, b)
-})
+}
+
+// window.runTest = function () {
+//   const numberArr = Array.from({ length: 200 }, (_, i) => i - 100)
+
+//   for (const num1 of numberArr) {
+//     for (const num2 of numberArr) {
+//       // {
+//       //   // +
+//       //   const res = add(num1, num2)
+//       //   const valid = String(num1 + num2)
+//       //   if (res !== valid) {
+//       //     console.error(`add(${num1} + ${num2}, ${valid})`, res)
+//       //   }
+//       // }
+//       // {
+//       //   // -
+//       //   const res = minus(num1, num2)
+//       //   const valid = String(num1 - num2)
+//       //   if (res !== valid) {
+//       //     console.error(`minus(${num1} - ${num2}, ${valid})`, res)
+//       //   }
+//       // }
+//       // {
+//       //   // *
+//       //   const res = times(num1, num2)
+//       //   const valid = String(num1 * num2)
+//       //   if (res !== valid) {
+//       //     console.error(`times(${num1} * ${num2}, ${valid})`, res)
+//       //   }
+//       // }
+//       // {
+//       //   // /
+//       //   const res = into(num1 * num2, num2)
+//       //   const valid = String(num1)
+//       //   if (res !== valid) {
+//       //     console.error(`into(${num1} * ${num2} / ${num2}, ${valid})`, res)
+//       //   }
+//       // }
+//     }
+//   }
+//   console.log('done')
+// }

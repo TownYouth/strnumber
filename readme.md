@@ -23,9 +23,9 @@ const b = a.add(1, '1e+17').times(new StrNumber(2)) // 结果为：new StrNumber
 // 支持静态方法的调用，静态方法仅支持两数运算，且输出为字符串或特殊值的 StrNumber 原始值(如'NaN')
 const c = StrNumber.add(1, 2) // '3'
 
-// 支持隐式转换，但不推荐
 // calc 方法支持字符串公式运算
 const c = StrNumber.calc(`(1+${b})*4`) // '800000000000000020'
+// 支持隐式转换，但不推荐
 const d = a + 2 // 3
 ```
 

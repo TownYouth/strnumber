@@ -23,6 +23,15 @@ test('小整数相减', () => {
   expect(minus(100000, -20)).toBe('100020')
 })
 
+test('相等数相减', () => {
+  expect(minus(1, 1)).toBe('0')
+  expect(minus(1000, 1000)).toBe('0')
+  expect(minus(0, 0)).toBe('0')
+  expect(minus(-0, -0)).toBe('0')
+  expect(minus(-1, -1)).toBe('0')
+  expect(minus(-1000, -1000)).toBe('0')
+})
+
 test('大整数相减', () => {
   expect(minus('1234567890123456789', '20')).toBe('1234567890123456769')
   expect(minus('-1234567890123456789', '20')).toBe('-1234567890123456809')
