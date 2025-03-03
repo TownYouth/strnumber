@@ -7,6 +7,17 @@ test('不同的调用方式', () => {
   expect(strNumber.minus === StrNumber.minus).toBe(true)
 })
 
+test('常规场景', () => {
+  expect(minus(1000, 1)).toBe('999')
+  expect(minus(123.456, 0.456)).toBe('123')
+  expect(minus(500, 500)).toBe('0')
+  expect(minus(-100, 50)).toBe('-150')
+  expect(minus(-0.5, -0.3)).toBe('-0.2')
+  expect(minus(0, 0)).toBe('0')
+  expect(minus(1, '0.0000000001')).toBe('0.9999999999')
+  expect(minus('10000000000000000', 1)).toBe('9999999999999999')
+})
+
 test('不同的传参方式', () => {
   expect(minus(1, 2)).toBe('-1')
   expect(minus('1', 2)).toBe('-1')

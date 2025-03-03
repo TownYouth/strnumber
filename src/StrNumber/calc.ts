@@ -292,7 +292,7 @@ export const into = function (a: StrNumberType, b: StrNumberType): StrNumberValu
   let res = ''
   let parent = aList.shift() as string
   let jie = 0
-  while (aList.length || (jie < MAX_FLOAD_LENGTH + 1 && checkNumber(parent) !== '0')) {
+  while (aList.length || (jie < MAX_FLOAD_LENGTH + 10 && checkNumber(parent) !== '0')) {
     if (aIsLessThanB(parent, b)) {
       res += '0'
     } else {
@@ -429,7 +429,7 @@ export const formatNumber = function (value: StrNumberType): StrNumberValue {
   if (_isNaN(value)) return _NaN
 
   const _val = NumberRegex.exec(value as string)
-  if (!_val) return typeof _NaN
+  if (!_val) return _NaN
 
   const e = Number(_val[2] || 0)
   value = _val[1]

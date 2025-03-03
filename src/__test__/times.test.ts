@@ -7,6 +7,17 @@ test('不同的调用方式', () => {
   expect(strNumber.times === StrNumber.times).toBe(true)
 })
 
+test('常规场景', () => {
+  expect(times(12, 3)).toBe('36')
+  expect(times(-6, 7)).toBe('-42')
+  expect(times(999, 999)).toBe('998001')
+  expect(times(0.1, 0.2)).toBe('0.02')
+  expect(times(123.456, 0)).toBe('0')
+  expect(times('1e+50', '2e+30')).toBe(
+    '200000000000000000000000000000000000000000000000000000000000000000000000000000000'
+  )
+})
+
 test('不同的传参方式', () => {
   expect(times(1, 2)).toBe('2')
   expect(times('1', 2)).toBe('2')

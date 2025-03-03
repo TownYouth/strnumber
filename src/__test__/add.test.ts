@@ -7,6 +7,18 @@ test('不同的调用方式', () => {
   expect(strNumber.add === StrNumber.add).toBe(true)
 })
 
+test('常规场景', () => {
+  expect(add(123, 456)).toBe('579')
+  expect(add(999, 1)).toBe('1000')
+  expect(add(123.456, 0.544)).toBe('124')
+  expect(add(-100, 50)).toBe('-50')
+  expect(add(-200, -300)).toBe('-500')
+  expect(add(100, -99.99)).toBe('0.01')
+  expect(add(0, 0)).toBe('0')
+  expect(add('999999999999999999', 1)).toBe('1000000000000000000')
+  expect(add('0.9999999999', '0.0000000001')).toBe('1')
+})
+
 test('不同的传参方式', () => {
   expect(add(1, 2)).toBe('3')
   expect(add('1', 2)).toBe('3')
